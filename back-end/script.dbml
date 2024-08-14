@@ -1,0 +1,149 @@
+// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table categories {
+  id integer [primary key, increment]
+  name varchar(100) [note: 'Name of the category']
+  parent_id integer [note: 'Parent category ID']
+}
+
+Table products {
+  id integer [primary key, increment]
+  name varchar(255) [note: 'Name of the product']
+  description text [note: 'Description of the product']
+  price decimal(10, 2) [note: 'Price of the product']
+  category_id integer [note: 'Category ID of the product']
+  image_url varchar(255) [note: 'URL of the product image']
+  sku varchar(100) [note: 'Stock Keeping Unit']
+  created_at timestamp [note: 'Creation timestamp']
+  updated_at timestamp [note: 'Last update timestamp']
+}
+
+Table product_images {
+  id integer [primary key, increment]
+  product_id integer [note: 'Product ID']
+  image_url varchar(255) [note: 'URL of the image']
+  thumbnail_url varchar(255) [note: 'URL of the thumbnail']
+}
+
+Table sizes {
+  id integer [primary key, increment]
+  name varchar(50) [note: 'Name of the size']
+}
+
+Table product_sizes {
+  product_id integer [note: 'Product ID']
+  size_id integer [note: 'Size ID']
+  
+  // Composite primary key
+  primary key (product_id, size_id)
+}
+
+Table colors {
+  id integer [primary key, increment]
+  name varchar(50) [note: 'Name of the color']
+  hex_value varchar(7) [note: 'Hex value of the color']
+}
+
+Table product_colors {
+  product_id integer [note: 'Product ID']
+  color_id integer [note: 'Color ID']
+  
+  // Composite primary key
+  primary key (product_id, color_id)
+}
+
+Table reviews {
+  id integer [primary key, increment]
+  product_id integer [note: 'Product ID']
+  user_id integer [note: 'User ID']
+  rating integer [note: 'Rating from 1 to 5']
+  comment text [note: 'Review comment']
+  created_at timestamp [note: 'Creation timestamp']
+}
+
+Table additional_information {
+  id integer [primary key, increment]
+  product_id integer [note: 'Product ID']
+  info_key varchar(255) [note: 'Key of the additional information']
+  info_value text [note: 'Value of the additional information']
+}
+
+Table users {
+  id integer [primary key, increment]
+  name varchar(100) [note: 'Name of the user']
+  email varchar(100) [unique, note: 'Email address of the user']
+  password varchar(255) [note: 'Password hash']
+  created_at timestamp [note: 'Creation timestamp']
+  updated_at timestamp [note: 'Last update timestamp']
+}
+
+Table related_products {
+  product_id integer [note: 'Product ID']
+  related_product_id integer [note: 'Related Product ID']
+  
+  // Composite primary key
+  primary key (product_id, related_product_id)
+}
+
+Table cart {
+  id integer [primary key, increment]
+  user_id integer [note: 'User ID']
+  created_at timestamp [note: 'Creation timestamp']
+  updated_at timestamp [note: 'Last update timestamp']
+}
+
+Table cart_items {
+  id integer [primary key, increment]
+  cart_id integer [note: 'Cart ID']
+  product_id integer [note: 'Product ID']
+  quantity integer [note: 'Quantity of the product']
+}
+
+Table commandes {
+  id integer [primary key, increment]
+  user_id integer [note: 'User ID']
+  date_commande timestamp [note: 'Date of the order']
+  statut varchar(50) [note: 'Status of the order']
+  total decimal(10, 2) [note: 'Total amount of the order']
+  adresse_livraison varchar(255) [note: 'Delivery address']
+  ville_livraison varchar(100) [note: 'Delivery city']
+  code_postal_livraison varchar(10) [note: 'Delivery postal code']
+  pays_livraison varchar(100) [note: 'Delivery country']
+}
+
+Table details_commande {
+  id integer [primary key, increment]
+  commande_id integer [note: 'Order ID']
+  product_id integer [note: 'Product ID']
+  quantite integer [note: 'Quantity of the product']
+  prix_unitaire decimal(10, 2) [note: 'Unit price of the product']
+}
+
+Table favoris {
+  id integer [primary key, increment]
+  user_id integer [note: 'User ID']
+  product_id integer [note: 'Product ID']
+  date_ajout timestamp [note: 'Date when added to favorites']
+}
+
+// Define relationships
+Ref: products.category_id > categories.id
+Ref: product_images.product_id > products.id
+Ref: product_sizes.product_id > products.id
+Ref: product_sizes.size_id > sizes.id
+Ref: product_colors.product_id > products.id
+Ref: product_colors.color_id > colors.id
+Ref: reviews.product_id > products.id
+Ref: reviews.user_id > users.id
+Ref: additional_information.product_id > products.id
+Ref: related_products.product_id > products.id
+Ref: related_products.related_product_id > products.id
+Ref: cart.user_id > users.id
+Ref: cart_items.cart_id > cart.id
+Ref: cart_items.product_id > products.id
+Ref: commandes.user_id > users.id
+Ref: details_commande.commande_id > commandes.id
+Ref: details_commande.product_id > products.id
+Ref: favoris.user_id > users.id
+Ref: favoris.product_id > products.id
